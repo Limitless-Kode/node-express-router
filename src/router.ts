@@ -2,10 +2,26 @@ import express from "express";
 import { Controller } from "./interfaces/controller";
 
 class Router {
-  private router: express.Router;
+  private readonly router: express.Router;
+  public app: express.Application;
+
   constructor() {
     this.router = express.Router();
+    this.app = express();
     return this;
+  }
+
+  private api(
+      controller: Controller,
+      middlewares: any[] = []
+  ){
+    this.router.get('/', ...middlewares, controller.index);
+    this.router.get(`/:id`, ...middlewares, controller.show);
+    this.router.post('/', ...middlewares, controller.store);
+    this.router.put(`/:id`, ...middlewares, controller.update);
+    this.router.delete(`/:id`, ...middlewares, controller.destroy);
+
+    return this.router;
   }
 
   public apiResource(
@@ -13,31 +29,24 @@ class Router {
     controller: Controller,
     middlewares: any[] = []
   ) {
-    this.router.get(path, ...middlewares, controller.index);
-    this.router.get(`${path}/:id`, ...middlewares, controller.show);
+    this.app.use(path, this.api(controller, middlewares));
+  }
+
+  public get(path: string, controller: Controller,...middlewares: any[]) {
+    if(path === "/") return this.router.get(path, ...middlewares, controller.index);
+    return this.router.get(`${path}/:id`, ...middlewares, controller.show);
+  }
+
+  public post(path: string, controller: Controller, ...middlewares: any[]) {
     this.router.post(path, ...middlewares, controller.store);
+  }
+
+  public put(path: string, controller: Controller, ...middlewares: any[]) {
     this.router.put(`${path}/:id`, ...middlewares, controller.update);
+  }
+
+  public delete(path: string, controller: Controller, ...middlewares: any[]) {
     this.router.delete(`${path}/:id`, ...middlewares, controller.destroy);
-  }
-
-  public get(path: string, ...middlewares: any[]) {
-    this.router.get(path, ...middlewares);
-  }
-
-  public post(path: string, ...middlewares: any[]) {
-    this.router.post(path, ...middlewares);
-  }
-
-  public put(path: string, ...middlewares: any[]) {
-    this.router.put(path, ...middlewares);
-  }
-
-  public delete(path: string, ...middlewares: any[]) {
-    this.router.delete(path, ...middlewares);
-  }
-
-  public all(path: string, ...middlewares: any[]) {
-    this.router.all(path, ...middlewares);
   }
 
   public routes() {
