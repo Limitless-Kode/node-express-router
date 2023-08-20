@@ -1,9 +1,9 @@
-import express from "express";
+import express, {Express} from "express";
 import { Controller } from "./interfaces/controller";
 
 class Router {
   private readonly router: express.Router;
-  public app: express.Application;
+    readonly app: Express;
 
   constructor() {
     this.router = express.Router();
