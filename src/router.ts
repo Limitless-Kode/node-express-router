@@ -1,4 +1,4 @@
-import express, {Express} from "express";
+import express, {Express, NextFunction, Request, Response} from "express";
 import { Controller } from "./interfaces/controller";
 
 class Router {
@@ -32,25 +32,51 @@ class Router {
     this.app.use(path, this.api(controller, middlewares));
   }
 
-  public get(path: string, controller: Controller,...middlewares: any[]) {
-    if(path === "/") return this.router.get(path, ...middlewares, controller.index);
-    return this.router.get(`${path}/:id`, ...middlewares, controller.show);
+  public get(
+      path: string,
+      controller: Controller|((req: Request, res: Response, next: NextFunction)=> void),
+      ...middlewares: any[]
+  ) {
+    this.actionResolver(controller, path, middlewares);
+    if ("index" in controller && "show" in controller) {
+      return this.app.use(path, ...middlewares, path === "/" ? controller.index : controller.show);
+    }
+    throw new Error("Controller must have index and show methods");
   }
 
-  public post(path: string, controller: Controller, ...middlewares: any[]) {
-    this.router.post(path, ...middlewares, controller.store);
+  public post(
+      path: string,
+      controller: Controller|((req: Request, res: Response, next: NextFunction)=> void),
+      ...middlewares: any[]
+  ) {
+    this.actionResolver(controller, path, middlewares)
+    if ("store" in controller) {
+      this.app.use(`${path}`, ...middlewares, controller.store);
+    }
   }
 
-  public put(path: string, controller: Controller, ...middlewares: any[]) {
-    this.router.put(`${path}/:id`, ...middlewares, controller.update);
+  public put(path: string, controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
+    this.actionResolver(controller, path, middlewares);
+    if ("update" in controller) {
+        this.app.use(`${path}`, ...middlewares, controller.update);
+    }
   }
 
-  public delete(path: string, controller: Controller, ...middlewares: any[]) {
-    this.router.delete(`${path}/:id`, ...middlewares, controller.destroy);
+  public delete(path: string, controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
+    this.actionResolver(controller, path, middlewares);
+    if ("destroy" in controller) {
+        this.app.use(`${path}`, ...middlewares, controller.destroy);
+    }
   }
 
   public routes() {
     return this.router;
+  }
+
+  private actionResolver(controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), path: string, middlewares: any[] = []) {
+    if (typeof controller === "function"){
+      return this.app.use(path, ...middlewares, controller);
+    }
   }
 }
 

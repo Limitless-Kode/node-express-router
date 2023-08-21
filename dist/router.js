@@ -22,21 +22,32 @@ class Router {
         this.app.use(path, this.api(controller, middlewares));
     }
     get(path, controller, ...middlewares) {
-        if (path === "/")
-            return this.router.get(path, ...middlewares, controller.index);
-        return this.router.get(`${path}/:id`, ...middlewares, controller.show);
+        this.actionResolver(controller, path, middlewares);
+        if ("index" in controller && "show" in controller) {
+            return this.app.use(path, ...middlewares, path === "/" ? controller.index : controller.show);
+        }
+        throw new Error("Controller must have index and show methods");
     }
     post(path, controller, ...middlewares) {
-        this.router.post(path, ...middlewares, controller.store);
+        this.actionResolver(controller, path, middlewares);
+        if ("store" in controller) {
+            this.app.use(`${path}`, ...middlewares, controller.store);
+        }
     }
-    put(path, controller, ...middlewares) {
-        this.router.put(`${path}/:id`, ...middlewares, controller.update);
-    }
-    delete(path, controller, ...middlewares) {
-        this.router.delete(`${path}/:id`, ...middlewares, controller.destroy);
-    }
+    // public put(path: string, controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
+    //   this.app.use(`${path}`, ...middlewares, controller.update);
+    // }
+    //
+    // public delete(path: string, controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
+    //   this.app.use(`${path}`, ...middlewares, controller.destroy);
+    // }
     routes() {
         return this.router;
+    }
+    actionResolver(controller, path, middlewares = []) {
+        if (typeof controller === "function") {
+            return this.app.use(path, ...middlewares, controller);
+        }
     }
 }
 exports.default = new Router();

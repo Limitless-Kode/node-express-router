@@ -6,6 +6,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Router = void 0;
 const router_1 = __importDefault(require("./router"));
 exports.Router = router_1.default;
-console.log("Router: ", router_1.default);
-console.log("app", router_1.default.app);
 //# sourceMappingURL=index.js.map
