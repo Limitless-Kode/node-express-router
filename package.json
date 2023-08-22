@@ -7,6 +7,10 @@
   "version": "0.2.0",
   "description": "String helper method for all string and JSON manipulations",
   "main": "./dist/app.bundle.js",
+  "files": [
+    "./dist/app.bundle.js",
+    "./types"
+  ],
   "scripts": {
     "release": "release-it",
     "test": "jest --config jestconfig.json",
