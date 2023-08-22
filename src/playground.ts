@@ -27,8 +27,6 @@ class UserController {
 
 
 Router.apiResource('/you', new UserController());
-Router.post('/me', (new UserController()).store);
-Router.put('/me/:id', (new UserController()).update);
 Router.get('/me', (new UserController().index));
 Router.get('/me/:id', (new UserController()).show);
 
