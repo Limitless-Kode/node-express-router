@@ -4,16 +4,29 @@ import { Controller } from "./interfaces/controller";
 
 type Invoker = "get"|"post"|"put"|"delete";
 
+/**
+ * Represents a router that provides utility methods for creating API routes using Express.
+ */
 class Router {
   private readonly router: express.Router;
   readonly app: Express;
 
+  /**
+   * Creates an instance of Router.
+   */
   constructor() {
     this.router = express.Router();
     this.app = express();
     return this;
   }
 
+  /**
+   * Creates API endpoints for the specified controller.
+   *
+   * @param {Controller} controller - The controller object to handle API requests.
+   * @param {any[]} [middlewares=[]] - An array of middleware functions to apply to the routes.
+   * @returns {express.Router} The Express router with the defined API endpoints.
+   */
   private api(
       controller: any,
       middlewares: any[] = []
@@ -27,6 +40,13 @@ class Router {
     return this.router;
   }
 
+  /**
+   * Creates a resource-based API using the specified controller and path.
+   *
+   * @param {string} path - The base path for the API resource.
+   * @param {Controller} controller - The controller object to handle API requests.
+   * @param {any[]} [middlewares=[]] - An array of middleware functions to apply to the routes.
+   */
   public apiResource(
       path: string,
       controller: Controller,
@@ -35,6 +55,13 @@ class Router {
     this.app.use(path, this.api(controller, middlewares));
   }
 
+  /**
+   * Creates a GET route for the specified path and controller.
+   *
+   * @param {string} path - The path for the GET route.
+   * @param {function} controller - The controller function to handle the route.
+   * @param {any[]} middlewares - An array of middleware functions to apply to the route.
+   */
   public get(
       path: string,
       controller: ((req: Request, res: Response, next: NextFunction)=> void),
@@ -43,6 +70,13 @@ class Router {
     this.actionResolver("get", controller, path, middlewares);
   }
 
+  /**
+   * Creates a POST route for the specified path and controller.
+   *
+   * @param {string} path - The path for the POST route.
+   * @param {function} controller - The controller function to handle the route.
+   * @param {any[]} middlewares - An array of middleware functions to apply to the route.
+   */
   public post(
       path: string,
       controller: ((req: Request, res: Response, next: NextFunction)=> void),
@@ -51,14 +85,33 @@ class Router {
     this.actionResolver("post", controller, path, middlewares);
   }
 
+  /**
+   * Creates a PUT route for the specified path and controller.
+   *
+   * @param {string} path - The path for the PUT route.
+   * @param {function} controller - The controller function to handle the route.
+   * @param {any[]} middlewares - An array of middleware functions to apply to the route.
+   */
   public put(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
     this.actionResolver("put",controller, path, middlewares);
   }
 
+  /**
+   * Creates a DELETE route for the specified path and controller.
+   *
+   * @param {string} path - The path for the DELETE route.
+   * @param {function} controller - The controller function to handle the route.
+   * @param {any[]} middlewares - An array of middleware functions to apply to the route.
+   */
   public delete(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
     this.actionResolver("delete",controller, path, middlewares);
   }
 
+  /**
+   * Retrieves the underlying Express router with defined routes.
+   *
+   * @returns {express.Router} The Express router with defined routes.
+   */
   public routes() {
     return this.router;
   }
