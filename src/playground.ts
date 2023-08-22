@@ -28,7 +28,7 @@ class UserController {
 
 Router.apiResource('/you', new UserController());
 Router.get('/me', (new UserController().index));
-Router.get('/me/:id', (new UserController()).show);
+// Router.get('/me/:id', (new UserController()).show);
 
 
 server.listen(port, () => {
