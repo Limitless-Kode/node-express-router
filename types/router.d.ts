@@ -6,8 +6,10 @@ declare class Router {
     constructor();
     private api;
     apiResource(path: string, controller: Controller, middlewares?: any[]): void;
-    get(path: string, controller: Controller | ((req: Request, res: Response, next: NextFunction) => void), ...middlewares: any[]): express.Express;
-    post(path: string, controller: Controller | ((req: Request, res: Response, next: NextFunction) => void), ...middlewares: any[]): void;
+    get(path: string, controller: ((req: Request, res: Response, next: NextFunction) => void), ...middlewares: any[]): void;
+    post(path: string, controller: ((req: Request, res: Response, next: NextFunction) => void), ...middlewares: any[]): void;
+    put(path: string, controller: ((req: Request, res: Response, next: NextFunction) => void), ...middlewares: any[]): void;
+    delete(path: string, controller: ((req: Request, res: Response, next: NextFunction) => void), ...middlewares: any[]): void;
     routes(): express.Router;
     private actionResolver;
 }

@@ -1,9 +1,12 @@
 import express, {Express, NextFunction, Request, Response} from "express";
 import { Controller } from "./interfaces/controller";
 
+
+type Invoker = "get"|"post"|"put"|"delete";
+
 class Router {
   private readonly router: express.Router;
-    readonly app: Express;
+  readonly app: Express;
 
   constructor() {
     this.router = express.Router();
@@ -12,7 +15,7 @@ class Router {
   }
 
   private api(
-      controller: Controller,
+      controller: any,
       middlewares: any[] = []
   ){
     this.router.get('/', ...middlewares, controller.index);
@@ -25,59 +28,66 @@ class Router {
   }
 
   public apiResource(
-    path: string,
-    controller: Controller,
-    middlewares: any[] = []
+      path: string,
+      controller: Controller,
+      middlewares: any[] = []
   ) {
     this.app.use(path, this.api(controller, middlewares));
   }
 
   public get(
       path: string,
-      controller: Controller|((req: Request, res: Response, next: NextFunction)=> void),
+      controller: ((req: Request, res: Response, next: NextFunction)=> void),
       ...middlewares: any[]
   ) {
-    this.actionResolver(controller, path, middlewares);
-    if ("index" in controller && "show" in controller) {
-      return this.app.use(path, ...middlewares, path === "/" ? controller.index : controller.show);
-    }
-    throw new Error("Controller must have index and show methods");
+    this.actionResolver("get", controller, path, middlewares);
   }
 
   public post(
       path: string,
-      controller: Controller|((req: Request, res: Response, next: NextFunction)=> void),
+      controller: ((req: Request, res: Response, next: NextFunction)=> void),
       ...middlewares: any[]
   ) {
-    this.actionResolver(controller, path, middlewares)
-    if ("store" in controller) {
-      this.app.use(`${path}`, ...middlewares, controller.store);
-    }
+    this.actionResolver("post", controller, path, middlewares);
   }
 
-  public put(path: string, controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
-    this.actionResolver(controller, path, middlewares);
-    if ("update" in controller) {
-        this.app.use(`${path}`, ...middlewares, controller.update);
-    }
+  public put(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
+    this.actionResolver("put",controller, path, middlewares);
   }
 
-  public delete(path: string, controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
-    this.actionResolver(controller, path, middlewares);
-    if ("destroy" in controller) {
-        this.app.use(`${path}`, ...middlewares, controller.destroy);
-    }
+  public delete(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
+    this.actionResolver("delete",controller, path, middlewares);
   }
 
   public routes() {
     return this.router;
   }
 
-  private actionResolver(controller: Controller|((req: Request, res: Response, next: NextFunction)=> void), path: string, middlewares: any[] = []) {
+  private actionResolver(invoker: Invoker, controller: ((req: Request, res: Response, next: NextFunction)=> void), path: string, middlewares: any[] = []) {
+    let resolved = false;
     if (typeof controller === "function"){
-      return this.app.use(path, ...middlewares, controller);
+      switch (invoker) {
+        case "get":
+            resolved = true;
+            this.app.get(path, ...middlewares, controller);
+            break;
+        case "post":
+            resolved = true;
+            this.app.post(path, ...middlewares, controller);
+            break;
+        case "put":
+            resolved = true;
+            this.app.put(path, ...middlewares, controller);
+            break;
+        case "delete":
+            resolved = true;
+            this.app.delete(path, ...middlewares, controller);
+            break;
+      }
     }
+    return resolved;
   }
+
 }
 
 export default new Router();
