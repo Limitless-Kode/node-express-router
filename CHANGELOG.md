@@ -1,5 +1,7 @@
 
 
+## [0.2.5](https://github.com/limitless-kode/stringify/compare/0.2.4...0.2.5) (2023-08-30)
+
 ## [0.2.4](https://github.com/limitless-kode/stringify/compare/0.2.0...0.2.4) (2023-08-30)
 
 
