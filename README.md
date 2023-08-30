@@ -65,8 +65,6 @@ import { Router, Controller } from "@limitless.claver/node-express-router";
 // const app = express();
 const app = Router.app;
 
-const userController = new Controller(); // Your controller instance
-
 // Create a group of routes for users
 Router.group('/api', [/* Middlewares */], (router: any) => {
     router.get('/me', (new UserController().index));
