@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/limitless-kode/stringify.git"
   },
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "This package provides a utility for creating API routes using Express.js. It simplifies the process of defining API endpoints and handling requests through controllers.",
   "main": "./dist/app.bundle.js",
   "files": [
