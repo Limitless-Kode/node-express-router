@@ -53,6 +53,34 @@ Router.post("/custom", customController.store, [/* Middleware functions */]);
 
 ```
 
+### Creating an API Group
+
+The `group` method allows you to create a group of routes with the specified path and middleware functions:
+
+> **Note:** The `apiResource` doesn't work inside a `group`. This would be fixed in a future release.
+
+```javascript
+import { Router, Controller } from "@limitless.claver/node-express-router";
+// Replace
+// const app = express();
+const app = Router.app;
+
+const userController = new Controller(); // Your controller instance
+
+// Create a group of routes for users
+router.group("/api", [/* Middleware functions */], () => {
+    // Create a resource-based API for users
+    router.apiResource("/users", userController, [/* Middleware functions */]);
+
+    // Create a custom GET route
+    Router.get("/custom", userController.index, [/* Middleware functions */]);
+
+    // Create a custom POST route
+    Router.post("/custom", userController.store, [/* Middleware functions */]);
+});
+
+```
+
 ## Using the Controller
 Your controllers should implement the required methods to handle API requests. For example:
 

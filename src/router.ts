@@ -17,12 +17,12 @@ class Router {
   constructor() {
     this.router = express.Router();
     this.app = express();
-    return this;
   }
 
   /**
    * Creates API endpoints for the specified controller.
    *
+   * @param path
    * @param {Controller} controller - The controller object to handle API requests.
    * @param {any[]} [middlewares=[]] - An array of middleware functions to apply to the routes.
    * @returns {express.Router} The Express router with the defined API endpoints.
@@ -41,18 +41,37 @@ class Router {
   }
 
   /**
+   * Creates a group of routes with the specified path and middleware functions.
+   * @param path
+   * @param middlewares
+   * @param callback
+   */
+  public group(path: string, middlewares: any[] = [], callback: (router: any)=> void){
+    this.app.use(path, ...middlewares, this.router);
+    callback(this.router);
+  }
+
+  /**
    * Creates a resource-based API using the specified controller and path.
    *
    * @param {string} path - The base path for the API resource.
    * @param {Controller} controller - The controller object to handle API requests.
    * @param {any[]} [middlewares=[]] - An array of middleware functions to apply to the routes.
    */
+    // public apiResource(
+    //     path: string,
+    //     controller: any,
+    //     middlewares: any[] = []
+    // ){
+    //   this.app.use(path, this.api(controller, middlewares));
+    // }
   public apiResource(
       path: string,
-      controller: Controller,
+      controller: any,
       middlewares: any[] = []
-  ) {
-    this.app.use(path, this.api(controller, middlewares));
+  ){
+    this.api(controller, middlewares); // Add the routes directly to the router
+    this.app.use(path, this.router); // Use the router for the specified path
   }
 
   /**
@@ -65,9 +84,9 @@ class Router {
   public get(
       path: string,
       controller: ((req: Request, res: Response, next: NextFunction)=> void),
-      ...middlewares: any[]
+      middlewares: any[]
   ) {
-    this.actionResolver("get", controller, path, middlewares);
+    this.actionResolver("get", controller, path, ...middlewares);
   }
 
   /**
@@ -80,9 +99,9 @@ class Router {
   public post(
       path: string,
       controller: ((req: Request, res: Response, next: NextFunction)=> void),
-      ...middlewares: any[]
+      middlewares: any[]
   ) {
-    this.actionResolver("post", controller, path, middlewares);
+    this.actionResolver("post", controller, path, ...middlewares);
   }
 
   /**
@@ -92,8 +111,8 @@ class Router {
    * @param {function} controller - The controller function to handle the route.
    * @param {any[]} middlewares - An array of middleware functions to apply to the route.
    */
-  public put(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
-    this.actionResolver("put",controller, path, middlewares);
+  public put(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), middlewares: any[]) {
+    this.actionResolver("put",controller, path, ...middlewares);
   }
 
   /**
@@ -103,8 +122,8 @@ class Router {
    * @param {function} controller - The controller function to handle the route.
    * @param {any[]} middlewares - An array of middleware functions to apply to the route.
    */
-  public delete(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), ...middlewares: any[]) {
-    this.actionResolver("delete",controller, path, middlewares);
+  public delete(path: string, controller: ((req: Request, res: Response, next: NextFunction)=> void), middlewares: any[]) {
+    this.actionResolver("delete",controller, path, ...middlewares);
   }
 
   /**
