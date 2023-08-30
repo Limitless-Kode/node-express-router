@@ -5,7 +5,7 @@
     "url": "git+https://github.com/limitless-kode/stringify.git"
   },
   "version": "0.2.4",
-  "description": "String helper method for all string and JSON manipulations",
+  "description": "This package provides a utility for creating API routes using Express.js. It simplifies the process of defining API endpoints and handling requests through controllers.",
   "main": "./dist/app.bundle.js",
   "files": [
     "./dist/app.bundle.js",
@@ -20,7 +20,7 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json"
   },
-  "keywords": [],
+  "keywords": ["Express", "Router"],
   "author": {
     "name": "Peter Claver",
     "email": "limitless.claver@gmail.com"

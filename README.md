@@ -68,15 +68,9 @@ const app = Router.app;
 const userController = new Controller(); // Your controller instance
 
 // Create a group of routes for users
-router.group("/api", [/* Middleware functions */], () => {
-    // Create a resource-based API for users
-    router.apiResource("/users", userController, [/* Middleware functions */]);
-
-    // Create a custom GET route
-    Router.get("/custom", userController.index, [/* Middleware functions */]);
-
-    // Create a custom POST route
-    Router.post("/custom", userController.store, [/* Middleware functions */]);
+Router.group('/api', [/* Middlewares */], (router: any) => {
+    router.get('/me', (new UserController().index));
+    router.get('/me/:id', (new YouController()).show);
 });
 
 ```
